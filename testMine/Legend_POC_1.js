@@ -87,7 +87,8 @@ function renderHomepage3Demo(echarts) {
     function getSeriesB() {
         return {
             type: 'line',
-            name: 'seriesA',
+            name: 'seriesB',
+			// name: 'seriesA', Also checked this and works OK (case 2 series with same name but different types
             yAxisIndex: 1,
             xAxisIndex: 1,
             smooth: true,
@@ -592,8 +593,43 @@ function renderHomepage3Demo(echarts) {
 		otherChartOption.yAxis.forEach(function(yAxis) {
 			yAxis.show = false;
 		});
-		return otherChartOption;
-		//return option2;
+		
+		return keepOnlyTheRequiredStuff(otherChartOption);
+		//return otherChartOption;
+	}
+	
+	function keepOnlyTheRequiredStuff(chartOption) {
+		var newChartOption = {"legend": {}, "grid": [], "xAxis": [], "yAxis": [], "series": []}; 
+		// Grid might not be an array
+		newChartOption.legend.show = true;
+		//newChartOption.legend.data = chartOption.legend.data; // Will be handled by the series
+		chartOption.grid.forEach(function(grid) {
+			var newGrid = {};
+			newGrid.width = 0;
+			newGrid.height = 0;
+			newChartOption.grid.push(newGrid);
+		});
+		chartOption.xAxis.forEach(function(xAxis) {
+			var newXAxis = {};
+			newXAxis.show = true;
+			newChartOption.xAxis.push(newXAxis);
+		});
+		chartOption.yAxis.forEach(function(yAxis) {
+			var newYAxis = {};
+			newYAxis.show = true;
+			newChartOption.yAxis.push(newYAxis);
+		});
+		chartOption.series.forEach(function(series) {
+			var newSeries = {};
+			newSeries.name = series.name;
+			newSeries.type = series.type;
+			newSeries.itemStyle = series.itemStyle; // To fix wrong colors
+			newSeries.xAxisIndex = series.xAxisIndex;
+			newSeries.yAxisIndex = series.yAxisIndex;
+			newChartOption.series.push(newSeries);
+		});
+		
+		return newChartOption;
 	}
 
     function bindAction(fromChart, toChart) {
